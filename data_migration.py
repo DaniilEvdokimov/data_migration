@@ -28,3 +28,18 @@ def connect_db(database):
     s = session()
 
 
+def drop_table():
+    """Удаление таблицы"""
+    database = input('Введите бд для подключения: ')
+    connect_db(database)
+
+    all_tables = inspect(engine).get_table_names()
+    print('Таблицы: ')
+    print(*all_tables, sep=', ')
+    name_table = input("Укажите название таблицы для удаления: ")
+    if name_table in all_tables:
+        table = Table(name_table, metadata, autoload=True)
+        table.drop(engine)
+        print('Таблица удалена')
+    else:
+        print('Такой таблицы нет')
