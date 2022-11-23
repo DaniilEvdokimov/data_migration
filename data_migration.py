@@ -83,3 +83,29 @@ def transliteration():
         print('Столбцы переименованы')
 
     translit_table_columns()
+
+
+def comparison_tables_rows():
+    """Проверка одинаковое ли кол-во строк в двух таблицах"""
+
+    database_1 = input('Введите бд для подключения: ')
+    connect_db(database_1)
+    all_tables = inspect(engine).get_table_names()
+    print('Таблицы: ', end='')
+    print(*all_tables, sep=', ')
+    user_table = input('Укажите названия таблицы: ')
+    my_table = Table(user_table, metadata, autoload=True, autoload_with=engine)
+    database_1_count_rows = s.query(my_table).count()
+    print(f'Количество строк в {user_table} {database_1_count_rows}')
+
+    database_2 = input('Введите бд для подключения: ')
+    connect_db(database_2)
+    all_tables = inspect(engine).get_table_names()
+    print('Таблицы: ', end='')
+    print(*all_tables, sep=', ')
+    user_table = input('Укажите названия таблицы: ')
+    my_table = Table(user_table, metadata, autoload=True, autoload_with=engine)
+    database_2_count_rows = s.query(my_table).count()
+    print(f'Количество строк в {user_table} {database_2_count_rows}')
+
+    return database_1_count_rows == database_2_count_rows
