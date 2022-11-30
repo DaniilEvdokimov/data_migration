@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, MetaData, inspect, Table
 from sqlalchemy.engine.url import URL
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-
+import pandas as pd
 
 def connect_db(database):
     """Подключение к бд на основе информации о параметрах подключения"""
@@ -109,3 +109,25 @@ def comparison_tables_rows():
     print(f'Количество строк в {user_table} {database_2_count_rows}')
 
     return database_1_count_rows == database_2_count_rows
+
+
+def insert_csv_xlsx_table():
+    """Insert данных в таблицу на основе информации о её названии, пути к файлу, где хранятся вносимые данные"""
+
+    database = input('Введите бд для подключения: ')
+    connect_db(database)
+
+    print('Таблицы:', end=' ')
+    print(*inspect(engine).get_table_names(), sep=', ')
+    table_name = input("Укажите название таблицы: ")
+    type_file = input('Укажите тип файла(csv/xlsx): ')
+    filepath = input('Укажите путь до файла: ')
+
+    if type_file == 'csv':
+        df = pd.read_csv(filepath, header=0, sep=',', encoding='utf8')
+        df.to_sql(table_name, con=engine, index=False, if_exists='append')
+    elif type_file == 'xlsx':
+        df = pd.read_excel(filepath)
+        df.to_sql(table_name, con=engine, index=False, if_exists='append')
+
+    print(f'Данные в таблицу {table_name} успешно внесены')
