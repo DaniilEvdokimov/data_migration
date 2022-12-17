@@ -131,3 +131,25 @@ def insert_csv_xlsx_table():
         df.to_sql(table_name, con=engine, index=False, if_exists='append')
 
     print(f'Данные в таблицу {table_name} успешно внесены')
+
+
+def table_exists():
+    """проверка существует ли таблица в бд"""
+
+    database = input('Введите название бд: ')
+    connect_db(database)
+    name_table = input('Введите название таблицы: ')
+    print(inspect(engine).has_table(name_table))
+
+
+def transfer_table():
+    """перенос таблицы из одной бд в другую"""
+
+    database = input('Укажите из какой бд перенести таблицу: ')
+    connect_db(database)
+    input_table = input('Укажите названия таблицы для переноса: ')
+    input_db = input('Укажите в какую бд перенести таблицу: ')
+    engine.execute(f'CREATE TABLE {input_db}.{input_table} SELECT * FROM {database}.{input_table};')
+    table = Table(input_table, metadata, autoload=True)
+    table.drop(engine)
+    print(f'Таблица {input_table} успешно перенесена')
